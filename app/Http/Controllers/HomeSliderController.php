@@ -54,6 +54,10 @@ class HomeSliderController extends Controller
             $filename = date('YmdHi') . '_' . uniqid() . '.' . $extension;
             $file->move(public_path('upload/home_sliders/'), $filename);
             $save_path = 'upload/home_sliders/' . $filename;
+
+            if ($request->attachment_type == 'video') {
+                $this->optimizeVideo(public_path($save_path));
+            }
         }
 
         HomeSlider::create([
@@ -119,6 +123,10 @@ class HomeSliderController extends Controller
             $filename = date('YmdHi') . '_' . uniqid() . '.' . $extension;
             $file->move(public_path('upload/home_sliders/'), $filename);
             $save_path = 'upload/home_sliders/' . $filename;
+
+            if ($request->attachment_type == 'video') {
+                $this->optimizeVideo(public_path($save_path));
+            }
         }
 
         $slider->update([
@@ -153,5 +161,68 @@ class HomeSliderController extends Controller
         );
 
         return redirect()->route('all.home_sliders')->with($notification);
+    }
+
+    /**
+     * Optimizes an uploaded video for fast web playback.
+     * Compresses quality slightly, scales to max 720p, and moves moov atom to start of file.
+     */
+    private function optimizeVideo($filePath)
+    {
+        $ffmpeg = null;
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $where = shell_exec('where ffmpeg');
+            if ($where) {
+                $ffmpeg = 'ffmpeg';
+            }
+        } else {
+            $which = shell_exec('which ffmpeg');
+            if ($which) {
+                $ffmpeg = trim($which);
+            }
+        }
+
+        if (!$ffmpeg) {
+            $fallbacks = [
+                '/opt/homebrew/bin/ffmpeg',
+                '/usr/bin/ffmpeg',
+                '/usr/local/bin/ffmpeg',
+                '/usr/sbin/ffmpeg'
+            ];
+            foreach ($fallbacks as $path) {
+                if (file_exists($path)) {
+                    $ffmpeg = $path;
+                    break;
+                }
+            }
+        }
+
+        if (!$ffmpeg) {
+            return; // FFmpeg is not installed, skip optimization
+        }
+
+        $tempPath = $filePath . '.temp.mp4';
+        
+        // FFmpeg optimization command:
+        // -y to overwrite output files
+        // -i source video
+        // -vcodec libx264 (H.264 video codec)
+        // -profile:v main -level 3.1 -pix_fmt yuv420p (broad device support)
+        // -crf 26 (lower quality slightly to get a small web-friendly size, 23-28 range)
+        // -vf "scale='min(1280,iw)':-2" (downscale to max 720p height, preserving aspect ratio)
+        // -movflags +faststart (moves the Moov atom to the front to enable instant streaming)
+        // -acodec aac -ab 64k -ar 44100 (compress audio to a light profile suitable for background)
+        $command = escapeshellcmd($ffmpeg) . ' -y -i ' . escapeshellarg($filePath) . ' -vcodec libx264 -profile:v main -level 3.1 -crf 26 -pix_fmt yuv420p -vf "scale=\'min(1280,iw)\':-2" -movflags +faststart -acodec aac -ab 64k -ar 44100 ' . escapeshellarg($tempPath) . ' 2>&1';
+        
+        exec($command, $output, $returnVar);
+
+        if ($returnVar === 0 && file_exists($tempPath) && filesize($tempPath) > 0) {
+            unlink($filePath);
+            rename($tempPath, $filePath);
+        } else {
+            if (file_exists($tempPath)) {
+                unlink($tempPath);
+            }
+        }
     }
 }
