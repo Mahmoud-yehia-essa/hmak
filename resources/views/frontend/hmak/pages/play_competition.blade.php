@@ -444,10 +444,19 @@
                     `;
                     teamsSelector.appendChild(noOneLabel);
 
-                    // Bind listeners for options
-                    const options = teamsSelector.querySelectorAll('input[name="winner_team"]');
-                    options.forEach(opt => {
-                        opt.addEventListener('change', function() {
+                    // Bind listeners for options (direct click on label to prevent sr-only mobile input bugs)
+                    const options = teamsSelector.querySelectorAll('.judge-option');
+                    options.forEach(optLabel => {
+                        optLabel.addEventListener('click', function(e) {
+                            // Find the nested radio input
+                            const radio = this.querySelector('input[name="winner_team"]');
+                            if (!radio) return;
+
+                            // Prevent default browser behavior of label click to avoid double events,
+                            // but programmatically set the checked state.
+                            e.preventDefault();
+                            radio.checked = true;
+
                             // Reset styling
                             teamsSelector.querySelectorAll('.judge-option').forEach(l => {
                                 l.classList.remove('border-fuchsia-500', 'bg-fuchsia-500/10');
@@ -458,17 +467,15 @@
                                 }
                             });
 
-                            const parentLabel = this.closest('.judge-option');
-                            if (parentLabel) {
-                                parentLabel.classList.add('border-fuchsia-500', 'bg-fuchsia-500/10');
-                                const labelName = parentLabel.querySelector('.label-name');
-                                if (labelName) {
-                                    labelName.classList.remove('text-slate-400');
-                                    labelName.classList.add('text-fuchsia-400');
-                                }
+                            // Apply active styling
+                            this.classList.add('border-fuchsia-500', 'bg-fuchsia-500/10');
+                            const labelName = this.querySelector('.label-name');
+                            if (labelName) {
+                                labelName.classList.remove('text-slate-400');
+                                labelName.classList.add('text-fuchsia-400');
                             }
 
-                            selectedWinnerTeamId = this.value === 'no_one' ? null : this.value;
+                            selectedWinnerTeamId = radio.value === 'no_one' ? null : radio.value;
                         });
                     });
 
