@@ -425,42 +425,37 @@
                     teamsSelector.innerHTML = '';
                     if (activeTeams && activeTeams.forEach) {
                         activeTeams.forEach(team => {
-                            const label = document.createElement('label');
-                            label.className = 'judge-option relative flex items-center justify-center px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:border-fuchsia-500/50 transition-all select-none';
-                            label.innerHTML = `
-                                <input type="radio" name="winner_team" value="${team.id}" class="sr-only">
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'judge-option relative flex items-center justify-center px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:border-fuchsia-500/50 transition-all select-none';
+                            btn.setAttribute('data-team-id', team.id);
+                            btn.innerHTML = `
                                 <span class="text-xs font-bold text-slate-400 label-name">${team.name}</span>
                             `;
-                            teamsSelector.appendChild(label);
+                            teamsSelector.appendChild(btn);
                         });
                     }
 
                     // Add 'No one' option
-                    const noOneLabel = document.createElement('label');
-                    noOneLabel.className = 'judge-option relative flex items-center justify-center px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:border-fuchsia-500/50 transition-all select-none';
-                    noOneLabel.innerHTML = `
-                        <input type="radio" name="winner_team" value="no_one" class="sr-only" checked>
+                    const noOneBtn = document.createElement('button');
+                    noOneBtn.type = 'button';
+                    noOneBtn.className = 'judge-option relative flex items-center justify-center px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl cursor-pointer hover:border-fuchsia-500/50 transition-all select-none';
+                    noOneBtn.setAttribute('data-team-id', 'no_one');
+                    noOneBtn.innerHTML = `
                         <span class="text-xs font-bold text-slate-400 label-name">لا أحد</span>
                     `;
-                    teamsSelector.appendChild(noOneLabel);
+                    teamsSelector.appendChild(noOneBtn);
 
-                    // Bind listeners for options (direct click on label to prevent sr-only mobile input bugs)
+                    // Bind listeners for options
                     const options = teamsSelector.querySelectorAll('.judge-option');
-                    options.forEach(optLabel => {
-                        optLabel.addEventListener('click', function(e) {
-                            // Find the nested radio input
-                            const radio = this.querySelector('input[name="winner_team"]');
-                            if (!radio) return;
-
-                            // Prevent default browser behavior of label click to avoid double events,
-                            // but programmatically set the checked state.
+                    options.forEach(optBtn => {
+                        optBtn.addEventListener('click', function(e) {
                             e.preventDefault();
-                            radio.checked = true;
 
                             // Reset styling
-                            teamsSelector.querySelectorAll('.judge-option').forEach(l => {
-                                l.classList.remove('border-fuchsia-500', 'bg-fuchsia-500/10');
-                                const labelName = l.querySelector('.label-name');
+                            teamsSelector.querySelectorAll('.judge-option').forEach(b => {
+                                b.classList.remove('border-fuchsia-500', 'bg-fuchsia-500/10');
+                                const labelName = b.querySelector('.label-name');
                                 if (labelName) {
                                     labelName.classList.remove('text-fuchsia-400');
                                     labelName.classList.add('text-slate-400');
@@ -475,21 +470,19 @@
                                 labelName.classList.add('text-fuchsia-400');
                             }
 
-                            selectedWinnerTeamId = radio.value === 'no_one' ? null : radio.value;
+                            const val = this.getAttribute('data-team-id');
+                            selectedWinnerTeamId = val === 'no_one' ? null : val;
                         });
                     });
 
                     // Highlight initial option (No one)
-                    const initialChecked = teamsSelector.querySelector('input[name="winner_team"]:checked');
+                    const initialChecked = teamsSelector.querySelector('[data-team-id="no_one"]');
                     if (initialChecked) {
-                        const parent = initialChecked.closest('.judge-option');
-                        if (parent) {
-                            parent.classList.add('border-fuchsia-500', 'bg-fuchsia-500/10');
-                            const labelName = parent.querySelector('.label-name');
-                            if (labelName) {
-                                labelName.classList.remove('text-slate-400');
-                                labelName.classList.add('text-fuchsia-400');
-                            }
+                        initialChecked.classList.add('border-fuchsia-500', 'bg-fuchsia-500/10');
+                        const labelName = initialChecked.querySelector('.label-name');
+                        if (labelName) {
+                            labelName.classList.remove('text-slate-400');
+                            labelName.classList.add('text-fuchsia-400');
                         }
                     }
                 }
