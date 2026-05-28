@@ -17,7 +17,7 @@
                         @else
                             <video class="slider-media w-full h-full object-cover transition-transform duration-[6000ms] ease-out scale-105" 
                                    autoplay loop muted playsinline preload="auto" webkit-playsinline>
-                                <source src="{{ asset($item->attachment_path) }}" type="video/{{ pathinfo($item->attachment_path, PATHINFO_EXTENSION) }}">
+                                <source src="{{ route('video.stream', ['path' => $item->attachment_path]) }}" type="video/{{ pathinfo($item->attachment_path, PATHINFO_EXTENSION) }}">
                             </video>
                             <!-- Loading Spinner for Video -->
                             <div class="absolute inset-0 flex items-center justify-center bg-slate-950/40 video-loader transition-opacity duration-300 z-10">
@@ -56,7 +56,7 @@
                             @endif
 
                             @if($item->attachment_type == 'video')
-                                <button onclick="openVideoPopup('{{ asset($item->attachment_path) }}')" class="mt-2.5 sm:mt-4 flex items-center gap-1 sm:gap-2 bg-primary hover:bg-sky-600 text-white px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold w-fit transition-all hover:scale-105 shadow-lg shadow-sky-500/20 border border-white/10">
+                                <button onclick="openVideoPopup('{{ route('video.stream', ['path' => $item->attachment_path]) }}')" class="mt-2.5 sm:mt-4 flex items-center gap-1 sm:gap-2 bg-primary hover:bg-sky-600 text-white px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold w-fit transition-all hover:scale-105 shadow-lg shadow-sky-500/20 border border-white/10">
                                     <span class="material-symbols-outlined text-base sm:text-lg">play_circle</span>
                                     مشاهدة الفيديو
                                 </button>

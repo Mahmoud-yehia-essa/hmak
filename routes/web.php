@@ -1375,4 +1375,26 @@ Route::controller(MarketCategoryController::class)->middleware(['checkUserRole',
     Route::get('/admin/market/items/toggle-status/{id}', 'itemsToggleStatus')->name('market.items.toggle_status');
 });
 
+// Route for range-supported video streaming
+Route::get('/video-stream', function (Illuminate\Http\Request $request) {
+    $path = $request->query('path');
+    if (!$path) {
+        abort(400, 'Missing path parameter.');
+    }
+    
+    // Clean path to prevent directory traversal
+    $path = str_replace(['../', '..\\'], '', $path);
+    $path = ltrim($path, '/');
+    $fullPath = public_path($path);
+    
+    if (!file_exists($fullPath)) {
+        abort(404, 'File not found.');
+    }
+    
+    return response()->file($fullPath, [
+        'Content-Type' => 'video/mp4',
+        'Accept-Ranges' => 'bytes',
+    ]);
+})->name('video.stream');
+
 require __DIR__.'/auth.php';
