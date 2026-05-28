@@ -16,8 +16,12 @@
                                  src="{{ asset($item->attachment_path) }}"/>
                         @else
                             <video class="slider-media w-full h-full object-cover transition-transform duration-[6000ms] ease-out scale-105" 
-                                   autoplay loop muted playsinline preload="auto" webkit-playsinline>
-                                <source src="{{ route('video.stream', ['path' => $item->attachment_path]) }}" type="video/{{ pathinfo($item->attachment_path, PATHINFO_EXTENSION) }}">
+                                   loop muted playsinline {{ $index === 0 ? 'preload=metadata' : 'preload=none' }} webkit-playsinline>
+                                @if($index === 0)
+                                    <source src="{{ asset($item->attachment_path) }}" type="video/{{ pathinfo($item->attachment_path, PATHINFO_EXTENSION) }}">
+                                @else
+                                    <source data-src="{{ asset($item->attachment_path) }}" type="video/{{ pathinfo($item->attachment_path, PATHINFO_EXTENSION) }}">
+                                @endif
                             </video>
                             <!-- Loading Spinner for Video -->
                             <div class="absolute inset-0 flex items-center justify-center bg-slate-950/40 video-loader transition-opacity duration-300 z-10">
@@ -56,7 +60,7 @@
                             @endif
 
                             @if($item->attachment_type == 'video')
-                                <button onclick="openVideoPopup('{{ route('video.stream', ['path' => $item->attachment_path]) }}')" class="mt-2.5 sm:mt-4 flex items-center gap-1 sm:gap-2 bg-primary hover:bg-sky-600 text-white px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold w-fit transition-all hover:scale-105 shadow-lg shadow-sky-500/20 border border-white/10">
+                                <button onclick="openVideoPopup('{{ asset($item->attachment_path) }}')" class="mt-2.5 sm:mt-4 flex items-center gap-1 sm:gap-2 bg-primary hover:bg-sky-600 text-white px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold w-fit transition-all hover:scale-105 shadow-lg shadow-sky-500/20 border border-white/10">
                                     <span class="material-symbols-outlined text-base sm:text-lg">play_circle</span>
                                     مشاهدة الفيديو
                                 </button>
@@ -157,8 +161,18 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentIndex = 0;
     let autoplayTimer = null;
     const intervalTime = 6000;
+    let pageFullyLoaded = false;
 
-    function activateSlide(index) {
+    function ensureVideoLoaded(video) {
+        const source = video.querySelector('source');
+        if (source && source.hasAttribute('data-src')) {
+            source.setAttribute('src', source.getAttribute('data-src'));
+            source.removeAttribute('data-src');
+            video.load();
+        }
+    }
+
+    function activateSlide(index, userTriggered = false) {
         items.forEach((item, i) => {
             const media = item.querySelector('.slider-media');
             const content = item.querySelector('.slider-content-text');
@@ -170,7 +184,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (media) {
                     media.style.transform = 'scale(1.05)';
                     if (media.tagName === 'VIDEO') {
-                        media.play().catch(e => {});
+                        const source = media.querySelector('source');
+                        const hasSrc = source && source.hasAttribute('src');
+                        if (hasSrc || pageFullyLoaded || userTriggered) {
+                            ensureVideoLoaded(media);
+                            media.play().catch(e => {});
+                        }
                     }
                 }
                 
@@ -196,6 +215,16 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
+        // Pre-load the next slide's video if page is loaded
+        if (pageFullyLoaded) {
+            const nextIndex = (index + 1) % items.length;
+            const nextItem = items[nextIndex];
+            const nextMedia = nextItem.querySelector('.slider-media');
+            if (nextMedia && nextMedia.tagName === 'VIDEO') {
+                ensureVideoLoaded(nextMedia);
+            }
+        }
+
         dots.forEach((dot, d) => {
             if (d === index) {
                 dot.classList.add('bg-white', 'w-6');
@@ -209,14 +238,14 @@ document.addEventListener("DOMContentLoaded", function() {
         currentIndex = index;
     }
 
-    function nextSlide() {
+    function nextSlide(userTriggered = false) {
         let index = (currentIndex + 1) % items.length;
-        activateSlide(index);
+        activateSlide(index, userTriggered);
     }
 
-    function prevSlide() {
+    function prevSlide(userTriggered = false) {
         let index = (currentIndex - 1 + items.length) % items.length;
-        activateSlide(index);
+        activateSlide(index, userTriggered);
     }
 
     function startAutoplay() {
@@ -232,14 +261,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (nextBtn) {
         nextBtn.addEventListener('click', function() {
-            nextSlide();
+            nextSlide(true);
             startAutoplay();
         });
     }
 
     if (prevBtn) {
         prevBtn.addEventListener('click', function() {
-            prevSlide();
+            prevSlide(true);
             startAutoplay();
         });
     }
@@ -247,9 +276,26 @@ document.addEventListener("DOMContentLoaded", function() {
     dots.forEach(dot => {
         dot.addEventListener('click', function() {
             const index = parseInt(this.getAttribute('data-slide'));
-            activateSlide(index);
+            activateSlide(index, true);
             startAutoplay();
         });
+    });
+
+    // Load active video slide asynchronously after window resources are fully loaded
+    window.addEventListener('load', function() {
+        pageFullyLoaded = true;
+        const activeVideo = items[currentIndex].querySelector('video');
+        if (activeVideo) {
+            ensureVideoLoaded(activeVideo);
+            activeVideo.play().catch(e => {});
+        }
+        
+        // Pre-load the next slide's video
+        const nextIndex = (currentIndex + 1) % items.length;
+        const nextVideo = items[nextIndex].querySelector('video');
+        if (nextVideo) {
+            ensureVideoLoaded(nextVideo);
+        }
     });
 
     slider.style.cursor = 'grab';
