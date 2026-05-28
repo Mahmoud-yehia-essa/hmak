@@ -39,7 +39,7 @@
 
         {{-- Breadcrumb --}}
         <nav class="flex mb-6 text-xs text-slate-500 dark:text-slate-400 font-medium" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center gap-2" style="list-style:none;padding:0;margin:0;">
+            <ol class="flex flex-wrap items-center gap-2" style="list-style:none;padding:0;margin:0;">
                 <li><a href="{{ route('show.home') }}" class="hover:text-sky-500 transition-colors" style="text-decoration:none;">الرئيسية</a></li>
                 <li><span class="text-slate-300">/</span></li>
                 <li><a href="{{ route('front.groups.index') }}" class="hover:text-sky-500 transition-colors" style="text-decoration:none;">المجموعات النقاشية</a></li>
@@ -295,7 +295,7 @@
                                     $isLiked = $userReaction && $userReaction->type === 'like';
                                     $isDisliked = $userReaction && $userReaction->type === 'dislike';
                                 @endphp
-                                <div class="flex items-center gap-6 py-2 text-slate-500 dark:text-slate-400 border-y border-slate-100 dark:border-slate-855">
+                                <div class="flex flex-wrap items-center gap-3 sm:gap-6 py-2 text-slate-500 dark:text-slate-400 border-y border-slate-100 dark:border-slate-855">
                                     {{-- Like button --}}
                                     <div class="inline-flex items-center gap-1.5 text-xs font-bold transition-colors">
                                         <button onclick="reactToSubject({{ $subj->id }}, 'like')" id="like-btn-{{ $subj->id }}"

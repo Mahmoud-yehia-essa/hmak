@@ -29,7 +29,7 @@
         }
         @keyframes ticker {
             0% { transform: translate3d(-100%, 0, 0); }
-            100% { transform: translate3d(100vw, 0, 0); }
+            100% { transform: translate3d(100%, 0, 0); }
         }
         .ticker-container {
             display: flex;
