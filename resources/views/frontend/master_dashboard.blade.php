@@ -9,7 +9,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>المقام ميديا</title>
+    <title>صحيفة حماك الإلكترونية</title>
 
 @php
     $socialMedia = \App\Models\SocialMedia::latest()->get();

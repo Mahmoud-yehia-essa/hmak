@@ -16,9 +16,13 @@
                                  src="{{ asset($item->attachment_path) }}"/>
                         @else
                             <video class="slider-media w-full h-full object-cover transition-transform duration-[6000ms] ease-out scale-105" 
-                                   autoplay loop muted playsinline>
+                                   autoplay loop muted playsinline preload="auto" webkit-playsinline>
                                 <source src="{{ asset($item->attachment_path) }}" type="video/{{ pathinfo($item->attachment_path, PATHINFO_EXTENSION) }}">
                             </video>
+                            <!-- Loading Spinner for Video -->
+                            <div class="absolute inset-0 flex items-center justify-center bg-slate-950/40 video-loader transition-opacity duration-300 z-10">
+                                <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            </div>
                         @endif
                     </div>
 
@@ -124,6 +128,32 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
     }
 
+    // Video preloading and spinner handling
+    const videos = slider.querySelectorAll('video');
+    videos.forEach(video => {
+        const item = video.closest('.slider-item');
+        if (!item) return;
+        const loader = item.querySelector('.video-loader');
+        if (!loader) return;
+
+        const hideLoader = () => {
+            loader.classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        const showLoader = () => {
+            loader.classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        video.addEventListener('playing', hideLoader);
+        video.addEventListener('canplay', hideLoader);
+        video.addEventListener('canplaythrough', hideLoader);
+        video.addEventListener('waiting', showLoader);
+
+        if (video.readyState >= 3) {
+            hideLoader();
+        }
+    });
+
     let currentIndex = 0;
     let autoplayTimer = null;
     const intervalTime = 6000;
@@ -222,8 +252,67 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    slider.style.cursor = 'grab';
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
     slider.addEventListener('mouseenter', stopAutoplay);
-    slider.addEventListener('mouseleave', startAutoplay);
+    slider.addEventListener('mouseleave', function() {
+        if (isDragging) {
+            isDragging = false;
+            slider.style.cursor = 'grab';
+        }
+        startAutoplay();
+    });
+
+    // Combined Mouse and Touch Swipe Support
+    slider.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        slider.style.cursor = 'grabbing';
+    });
+
+    slider.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+    });
+
+    slider.addEventListener('mouseup', function(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        slider.style.cursor = 'grab';
+        handleSwipe(e.clientX, e.clientY, true);
+    });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    slider.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    slider.addEventListener('touchend', function(e) {
+        handleSwipe(e.changedTouches[0].screenX, e.changedTouches[0].screenY, false);
+    }, {passive: true});
+
+    function handleSwipe(endX, endY, isMouse) {
+        const diffX = endX - (isMouse ? dragStartX : touchStartX);
+        const diffY = endY - (isMouse ? dragStartY : touchStartY);
+        const swipeThreshold = 50;
+
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold) {
+            if (diffX < 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+            startAutoplay();
+        }
+    }
 
     window.startMainSliderAutoplay = startAutoplay;
     window.stopMainSliderAutoplay = stopAutoplay;
