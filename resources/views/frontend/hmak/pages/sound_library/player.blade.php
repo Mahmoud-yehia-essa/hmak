@@ -63,6 +63,11 @@
                 <input type="range" id="player-volume-slider" min="0" max="1" step="0.05" value="0.8" class="w-16 md:w-20 accent-primary h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
             </div>
 
+            {{-- Share Track --}}
+            <button id="player-btn-share" class="text-slate-400 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-slate-800 focus:outline-none" title="مشاركة المقطع الصوتي">
+                <span class="material-symbols-outlined text-lg">share</span>
+            </button>
+
             {{-- Close Player --}}
             <button id="player-btn-close" class="text-slate-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-slate-800 focus:outline-none" title="إغلاق المشغل">
                 <span class="material-symbols-outlined text-lg">close</span>
@@ -88,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeBtn = document.getElementById('player-btn-volume');
     const volumeIcon = document.getElementById('volume-icon');
     const volumeSlider = document.getElementById('player-volume-slider');
+    const shareBtn = document.getElementById('player-btn-share');
     const closeBtn = document.getElementById('player-btn-close');
     const liveBadge = document.getElementById('player-live-badge');
     
@@ -99,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPlayingBtn = null;
     let savedVolume = parseFloat(localStorage.getItem('hmak_player_volume') || '0.8');
     let isLive = false;
+    let isDraggingTimeline = false;
+    let dragTime = 0;
+    let currentShareUrl = '';
 
     // Helper: Format Time in MM:SS
     function formatTime(secs) {
@@ -109,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Load & Play track
-    window.playTrack = function(url, name, author, avatar, type, buttonEl) {
+    window.playTrack = function(url, name, author, avatar, type, buttonEl, directShareUrl) {
         if (!url) return;
 
         // Stop and release previous audio stream/socket to prevent simultaneous playback
@@ -157,6 +166,15 @@ document.addEventListener('DOMContentLoaded', () => {
             player.classList.remove('translate-y-full');
         }, 50);
 
+        // Resolve share URL
+        if (buttonEl) {
+            currentShareUrl = buttonEl.getAttribute('data-share-url') || '';
+        } else if (directShareUrl) {
+            currentShareUrl = directShareUrl;
+        } else {
+            currentShareUrl = '';
+        }
+
         // Save state to localStorage
         localStorage.setItem('hmak_player_url', url);
         localStorage.setItem('hmak_player_title', name || '');
@@ -164,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('hmak_player_avatar', avatar || '');
         localStorage.setItem('hmak_player_type', type || '');
         localStorage.setItem('hmak_player_time', '0');
+        localStorage.setItem('hmak_player_share_url', currentShareUrl);
 
         // Queue logic: If playing from a list button on page, rebuild the queue
         if (buttonEl) {
@@ -175,7 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     name: t.getAttribute('data-title'),
                     author: t.getAttribute('data-author'),
                     avatar: t.getAttribute('data-avatar'),
-                    type: t.getAttribute('data-type')
+                    type: t.getAttribute('data-type'),
+                    shareUrl: t.getAttribute('data-share-url') || ''
                 }));
                 localStorage.setItem('hmak_player_queue', JSON.stringify(queue));
                 localStorage.setItem('hmak_player_queue_index', currentIndex.toString());
@@ -244,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Time Update event
     audio.addEventListener('timeupdate', () => {
-        if (isLive) return;
+        if (isLive || isDraggingTimeline) return;
         
         const curr = audio.currentTime;
         const dur = audio.duration;
@@ -293,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const matchingTrigger = document.querySelector(`.play-track-trigger[data-src="${nextTrack.url}"]`);
                 
                 // Play it!
-                window.playTrack(nextTrack.url, nextTrack.name, nextTrack.author, nextTrack.avatar, nextTrack.type, matchingTrigger);
+                window.playTrack(nextTrack.url, nextTrack.name, nextTrack.author, nextTrack.avatar, nextTrack.type, matchingTrigger, nextTrack.shareUrl);
                 return;
             }
         }
@@ -320,14 +340,73 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
     });
 
+    function getTimelinePct(e) {
+        const rect = timelineContainer.getBoundingClientRect();
+        let clientX = e.clientX;
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+        }
+        const clickX = clientX - rect.left;
+        const width = rect.width;
+        let pct = clickX / width;
+        return Math.max(0, Math.min(1, pct));
+    }
+
+    function updateTimelineVisual(pct) {
+        if (!audio.duration || !isFinite(audio.duration)) return;
+        dragTime = pct * audio.duration;
+        timeCurrent.textContent = formatTime(dragTime);
+        timelineProgress.style.width = `${pct * 100}%`;
+        timelineHandle.style.left = `${pct * 100}%`;
+    }
+
     // Seek / Timeline click
     timelineContainer.addEventListener('click', (e) => {
         if (isLive || !audio.duration || !isFinite(audio.duration)) return;
-        const rect = timelineContainer.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const width = rect.width;
-        const pct = clickX / width;
+        const pct = getTimelinePct(e);
         audio.currentTime = pct * audio.duration;
+    });
+
+    // Mouse drag seeking
+    timelineContainer.addEventListener('mousedown', (e) => {
+        if (isLive || !audio.duration || !isFinite(audio.duration)) return;
+        isDraggingTimeline = true;
+        const pct = getTimelinePct(e);
+        updateTimelineVisual(pct);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDraggingTimeline) return;
+        const pct = getTimelinePct(e);
+        updateTimelineVisual(pct);
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDraggingTimeline) {
+            isDraggingTimeline = false;
+            audio.currentTime = dragTime;
+        }
+    });
+
+    // Touch drag seeking (mobile)
+    timelineContainer.addEventListener('touchstart', (e) => {
+        if (isLive || !audio.duration || !isFinite(audio.duration)) return;
+        isDraggingTimeline = true;
+        const pct = getTimelinePct(e);
+        updateTimelineVisual(pct);
+    }, { passive: true });
+
+    timelineContainer.addEventListener('touchmove', (e) => {
+        if (!isDraggingTimeline) return;
+        const pct = getTimelinePct(e);
+        updateTimelineVisual(pct);
+    }, { passive: true });
+
+    timelineContainer.addEventListener('touchend', () => {
+        if (isDraggingTimeline) {
+            isDraggingTimeline = false;
+            audio.currentTime = dragTime;
+        }
     });
 
     // Volume controls
@@ -389,6 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('hmak_player_type');
         localStorage.removeItem('hmak_player_playing');
         localStorage.removeItem('hmak_player_time');
+        localStorage.removeItem('hmak_player_share_url');
     });
 
     // Attach click listeners to lists dynamically loaded on page
@@ -420,11 +500,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const storedType = localStorage.getItem('hmak_player_type');
     const storedPlaying = localStorage.getItem('hmak_player_playing');
     const storedTime = parseFloat(localStorage.getItem('hmak_player_time') || '0');
+    const storedShareUrl = localStorage.getItem('hmak_player_share_url');
 
     if (storedUrl) {
         isLive = (storedType === 'live');
         audio.src = storedUrl;
         audio.load();
+
+        if (storedShareUrl) {
+            currentShareUrl = storedShareUrl;
+        }
 
         // Update UI
         playerTrackName.textContent = storedTitle || 'بدون عنوان';
@@ -483,5 +568,76 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePlayPauseState(false);
         }
     }
+
+    // ===== Share Link Button & Toast logic =====
+    shareBtn.addEventListener('click', () => {
+        const urlToShare = currentShareUrl || window.location.href;
+        navigator.clipboard.writeText(urlToShare).then(() => {
+            showShareToast();
+        }).catch(err => {
+            console.error('Could not copy share URL: ', err);
+        });
+    });
+
+    function showShareToast() {
+        const existingToast = document.getElementById('share-success-toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.id = 'share-success-toast';
+        toast.className = 'fixed bottom-24 left-5 z-[200000] bg-slate-900/90 dark:bg-slate-950/90 text-white text-xs font-bold px-5 py-3 rounded-2xl shadow-xl border border-white/10 flex items-center gap-2.5 backdrop-blur-md transition-all duration-300 transform translate-y-10 opacity-0';
+        toast.style.direction = 'rtl';
+        toast.innerHTML = `
+            <span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>
+            <span>تم نسخ رابط مشاركة المقطع الصوتي بنجاح!</span>
+        `;
+        document.body.appendChild(toast);
+
+        // Animate in
+        setTimeout(() => {
+            toast.classList.remove('translate-y-10', 'opacity-0');
+        }, 50);
+
+        // Hide and remove
+        setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    // ===== Autoplay Shared Track Parser =====
+    function checkAndPlaySharedTrack() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const playTrackId = urlParams.get('play_track_id');
+        if (playTrackId) {
+            const trigger = document.querySelector(`.play-track-trigger[data-id="${playTrackId}"]`);
+            if (trigger) {
+                if (currentPlayingBtn === trigger && !audio.paused) {
+                    return;
+                }
+
+                const url = trigger.getAttribute('data-src');
+                const name = trigger.getAttribute('data-title');
+                const author = trigger.getAttribute('data-author');
+                const avatar = trigger.getAttribute('data-avatar');
+                const type = trigger.getAttribute('data-type');
+                const shareUrl = trigger.getAttribute('data-share-url') || '';
+
+                window.playTrack(url, name, author, avatar, type, trigger, shareUrl);
+            }
+        }
+    }
+
+    // Initialize Autoplay checks on page load
+    checkAndPlaySharedTrack();
+
+    // Hook Autoplay checks to PJAX page content swaps
+    document.addEventListener('pjax:end', () => {
+        checkAndPlaySharedTrack();
+    });
 });
 </script>

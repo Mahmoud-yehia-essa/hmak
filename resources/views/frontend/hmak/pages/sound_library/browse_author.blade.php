@@ -80,11 +80,13 @@
                         @endphp
                         
                         <div class="play-track-trigger flex flex-col md:flex-row md:items-center justify-between p-4 md:p-6 hover:bg-slate-50 dark:hover:bg-slate-850/50 transition-all cursor-pointer gap-4 border-l-4 border-transparent hover:border-purple-500"
+                             data-id="{{ $sound->id }}"
                              data-src="{{ $trackUrl }}"
                              data-title="{{ $sound->name }}"
                              data-author="{{ $author->name }}"
                              data-avatar="{{ $avatarUrl }}"
-                             data-type="{{ $sound->sound_type }}">
+                             data-type="{{ $sound->sound_type }}"
+                             data-share-url="{{ url()->current() }}?play_track_id={{ $sound->id }}">
                             
                             {{-- Left: Track number & basic info --}}
                             <div class="flex items-center gap-4 min-w-0 flex-grow">
