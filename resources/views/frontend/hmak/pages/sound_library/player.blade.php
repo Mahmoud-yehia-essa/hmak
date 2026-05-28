@@ -64,9 +64,54 @@
             </div>
 
             {{-- Share Track --}}
-            <button id="player-btn-share" class="text-slate-400 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-slate-800 focus:outline-none" title="مشاركة المقطع الصوتي">
-                <span class="material-symbols-outlined text-lg">share</span>
-            </button>
+            <div class="relative">
+                <button id="player-btn-share" class="text-slate-400 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-slate-800 focus:outline-none" title="مشاركة المقطع الصوتي">
+                    <span class="material-symbols-outlined text-lg">share</span>
+                </button>
+                
+                {{-- Share Dropdown Menu --}}
+                <div id="player-share-menu" class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-slate-900/95 dark:bg-slate-950/95 border border-slate-800 rounded-2xl shadow-2xl p-2 min-w-[160px] backdrop-blur-md z-[200000] flex flex-col gap-1 transition-all duration-200 opacity-0 scale-95 origin-bottom">
+                    {{-- WhatsApp --}}
+                    <a href="#" id="share-whatsapp" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" style="text-decoration:none;">
+                        <svg class="w-4 h-4 fill-emerald-500 shrink-0" viewBox="0 0 24 24">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm11.953-2.144c1.785 0 3.53-.48 5.056-1.388l.362-.214 3.761.986-.998-3.666.235-.374a9.76 9.76 0 0 0 1.498-5.185c.001-5.39-4.382-9.771-9.782-9.771-2.614 0-5.071 1.017-6.92 2.869a9.72 9.72 0 0 0-2.861 6.924c-.002 5.39 4.38 9.771 9.78 9.771zm5.372-7.348c-.294-.147-1.74-.86-2.012-.958-.273-.098-.472-.147-.67.148-.198.294-.766.958-.939 1.154-.173.196-.347.218-.641.071-2.905-1.454-4.783-4.22-5.46-5.385-.173-.294-.019-.453.128-.6.133-.133.294-.343.441-.515.147-.171.196-.294.294-.49.098-.196.049-.367-.025-.515-.074-.147-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.74-.71 1.987-1.393.248-.682.248-1.267.173-1.391-.074-.124-.272-.196-.566-.344z"/>
+                        </svg>
+                        <span>واتساب</span>
+                    </a>
+                    
+                    {{-- Twitter/X --}}
+                    <a href="#" id="share-twitter" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" style="text-decoration:none;">
+                        <svg class="w-4 h-4 fill-slate-350 shrink-0" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <span>تويتر / X</span>
+                    </a>
+                    
+                    {{-- Facebook --}}
+                    <a href="#" id="share-facebook" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" style="text-decoration:none;">
+                        <svg class="w-4 h-4 fill-blue-500 shrink-0" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                        <span>فيسبوك</span>
+                    </a>
+
+                    {{-- Telegram --}}
+                    <a href="#" id="share-telegram" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" style="text-decoration:none;">
+                        <svg class="w-4 h-4 fill-sky-400 shrink-0" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.12 1.13-.64 4.2-1.03 6.3-.17.9-.5 1.2-.82 1.2-.7 0-1.23-.53-1.9-.97-1.05-.7-1.65-1.13-2.67-1.8-1.18-.77-.42-1.2.26-1.9.18-.18 3.25-2.98 3.3-3.2.01-.03.02-.13-.04-.19-.06-.05-.16-.03-.23-.02-.1.02-1.74 1.1-4.93 3.25-.47.32-.9.48-1.28.47-.42-.01-1.22-.24-1.82-.44-.74-.24-1.33-.37-1.28-.79.03-.22.33-.45.92-.69 3.58-1.55 5.97-2.58 7.17-3.08 3.42-1.42 4.12-1.67 4.59-1.68.1 0 .33.02.48.15.12.1.16.23.18.33.02.2-.01.62-.03.81z"/>
+                        </svg>
+                        <span>تيليجرام</span>
+                    </a>
+                    
+                    <div class="h-px bg-slate-800/80 my-1"></div>
+
+                    {{-- Copy Link --}}
+                    <button id="share-copy-link" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-350 hover:text-white hover:bg-slate-800/80 transition-colors text-right w-full focus:outline-none">
+                        <span class="material-symbols-outlined text-base text-slate-400">content_copy</span>
+                        <span>نسخ الرابط</span>
+                    </button>
+                </div>
+            </div>
 
             {{-- Close Player --}}
             <button id="player-btn-close" class="text-slate-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-slate-800 focus:outline-none" title="إغلاق المشغل">
@@ -94,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeIcon = document.getElementById('volume-icon');
     const volumeSlider = document.getElementById('player-volume-slider');
     const shareBtn = document.getElementById('player-btn-share');
+    const shareMenu = document.getElementById('player-share-menu');
     const closeBtn = document.getElementById('player-btn-close');
     const liveBadge = document.getElementById('player-live-badge');
     
@@ -570,10 +616,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===== Share Link Button & Toast logic =====
-    shareBtn.addEventListener('click', () => {
+    shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleShareMenu();
+    });
+
+    function toggleShareMenu() {
+        const isHidden = shareMenu.classList.contains('hidden');
+        if (isHidden) {
+            updateShareMenuLinks();
+            shareMenu.classList.remove('hidden');
+            // Force reflow
+            shareMenu.offsetHeight;
+            shareMenu.classList.remove('opacity-0', 'scale-95');
+            shareMenu.classList.add('opacity-100', 'scale-100');
+        } else {
+            closeShareMenu();
+        }
+    }
+
+    function closeShareMenu() {
+        shareMenu.classList.remove('opacity-100', 'scale-100');
+        shareMenu.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => {
+            if (!shareMenu.classList.contains('opacity-100')) {
+                shareMenu.classList.add('hidden');
+            }
+        }, 200);
+    }
+
+    // Close share menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!shareBtn.contains(e.target) && !shareMenu.contains(e.target)) {
+            closeShareMenu();
+        }
+    });
+
+    function updateShareMenuLinks() {
+        const urlToShare = currentShareUrl || window.location.href;
+        const trackTitle = playerTrackName.textContent || '';
+        const authorName = playerAuthorName.textContent || '';
+        
+        const shareText = `استمع إلى المقطع الصوتي "${trackTitle}" بقلم/تقديم "${authorName}" عبر صحيفة حماك:\n${urlToShare}`;
+        
+        const encodedUrl = encodeURIComponent(urlToShare);
+        const encodedText = encodeURIComponent(shareText);
+
+        document.getElementById('share-whatsapp').href = `https://api.whatsapp.com/send?text=${encodedText}`;
+        document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodeURIComponent('استمع إلى: ' + trackTitle + ' - ' + authorName)}`;
+        document.getElementById('share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        document.getElementById('share-telegram').href = `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent('استمع إلى: ' + trackTitle)}`;
+    }
+
+    // Copy Link trigger inside the menu
+    document.getElementById('share-copy-link').addEventListener('click', () => {
         const urlToShare = currentShareUrl || window.location.href;
         navigator.clipboard.writeText(urlToShare).then(() => {
             showShareToast();
+            closeShareMenu();
         }).catch(err => {
             console.error('Could not copy share URL: ', err);
         });
