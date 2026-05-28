@@ -106,7 +106,7 @@
 <!-- Services Sub-Header Row -->
 <div class="bg-slate-50 dark:bg-slate-900/60 backdrop-blur-sm border-t border-slate-100 dark:border-slate-800/40">
     <div class="max-w-[95%] mx-auto px-4 lg:px-8">
-        <div class="flex items-center gap-6 h-10 overflow-x-auto no-scrollbar text-xs font-bold md:text-sm">
+        <div id="electronic-services-nav" class="flex items-center gap-6 h-10 overflow-x-auto no-scrollbar text-xs font-bold md:text-sm">
             <span class="text-slate-400 dark:text-slate-500 font-medium whitespace-nowrap flex items-center gap-1 shrink-0">
                 <span class="material-symbols-outlined text-base">widgets</span>
                 الخدمات الإلكترونية:

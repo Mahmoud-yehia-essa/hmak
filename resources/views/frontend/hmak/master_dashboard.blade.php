@@ -402,6 +402,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 isActive = path.startsWith('/groups');
             } else if (linkPath.includes('/market')) {
                 isActive = path.startsWith('/market');
+            } else if (linkPath.includes('/sound-library')) {
+                isActive = path.startsWith('/sound-library');
+            } else if (linkPath.includes('/help')) {
+                isActive = path.startsWith('/help');
             } else if (linkPath.includes('/news')) {
                 const catId = linkParams.get('category_id');
                 isActive = (path === '/news' && searchParams.get('category_id') === catId);
@@ -415,6 +419,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.className = 'text-primary border-b-2 border-primary pb-1';
             } else {
                 link.className = 'hover:text-primary transition-colors text-slate-700 dark:text-slate-200';
+            }
+        });
+
+        // Desktop electronic services sub-header links
+        document.querySelectorAll('#electronic-services-nav a').forEach(link => {
+            if (link.classList.contains('bg-gradient-to-l')) {
+                return; // Skip dashboard button
+            }
+            let linkUrlObj;
+            try {
+                linkUrlObj = new URL(link.href);
+            } catch(e) {
+                return;
+            }
+            const linkPath = linkUrlObj.pathname;
+
+            let isActive = false;
+
+            if (linkPath.includes('/news-eye')) {
+                isActive = path.startsWith('/news-eye');
+            } else if (linkPath.includes('/groups')) {
+                isActive = path.startsWith('/groups');
+            } else if (linkPath.includes('/market')) {
+                isActive = path.startsWith('/market');
+            } else if (linkPath.includes('/sound-library')) {
+                isActive = path.startsWith('/sound-library');
+            } else if (linkPath.includes('/help')) {
+                isActive = path.startsWith('/help');
+            } else {
+                isActive = (path === linkPath);
+            }
+
+            if (isActive) {
+                link.className = 'text-primary border-b-2 border-primary py-2 whitespace-nowrap';
+            } else {
+                link.className = 'text-slate-600 dark:text-slate-300 hover:text-primary transition-colors py-2 whitespace-nowrap';
             }
         });
 
@@ -439,6 +479,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 isActive = path.startsWith('/groups');
             } else if (linkPath.includes('/market')) {
                 isActive = path.startsWith('/market');
+            } else if (linkPath.includes('/sound-library')) {
+                isActive = path.startsWith('/sound-library');
+            } else if (linkPath.includes('/help')) {
+                isActive = path.startsWith('/help');
             } else if (linkPath.includes('/news')) {
                 const catId = linkParams.get('category_id');
                 isActive = (path === '/news' && searchParams.get('category_id') === catId);
