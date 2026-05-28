@@ -506,11 +506,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Buffering & Loading states
     audio.addEventListener('waiting', () => {
-        showLoading();
+        if (!audio.paused) {
+            showLoading();
+        }
     });
 
     audio.addEventListener('seeking', () => {
-        showLoading();
+        if (!audio.paused) {
+            showLoading();
+        }
     });
 
     audio.addEventListener('playing', () => {
