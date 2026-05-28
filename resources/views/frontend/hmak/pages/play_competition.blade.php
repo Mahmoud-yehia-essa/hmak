@@ -232,6 +232,14 @@
 
 <script>
     function initCompetitionPlay() {
+        const confirmBtnCheck = document.getElementById('confirm-score-btn');
+        if (confirmBtnCheck) {
+            if (confirmBtnCheck.dataset.listenersBound === 'true') {
+                return;
+            }
+            confirmBtnCheck.dataset.listenersBound = 'true';
+        }
+
         if (window.stopConfetti) {
             window.stopConfetti();
             window.stopConfetti = null;
