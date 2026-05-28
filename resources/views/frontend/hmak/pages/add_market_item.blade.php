@@ -4,7 +4,7 @@
 
 
 {{-- Hero Header --}}
-<div class="relative bg-gradient-to-r from-amber-950 via-yellow-900 to-slate-950 py-12 md:py-16 px-6 text-center border-b border-slate-200 dark:border-slate-800">
+<div class="relative overflow-hidden bg-gradient-to-r from-amber-950 via-yellow-900 to-slate-950 py-12 md:py-16 px-6 text-center border-b border-slate-200 dark:border-slate-800">
     {{-- Decorative Elements --}}
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
     <div class="absolute -top-10 -right-20 w-60 h-60 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
