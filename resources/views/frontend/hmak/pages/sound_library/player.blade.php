@@ -1,4 +1,14 @@
 {{-- ===== Floating Persistent Audio Player ===== --}}
+<style>
+@keyframes spin-icon {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.animate-spin-custom {
+    display: inline-block;
+    animation: spin-icon 1s linear infinite !important;
+}
+</style>
 <div id="floating-audio-player" style="display: none;" class="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 dark:bg-slate-950/95 text-white border-t border-slate-800 shadow-2xl transition-all duration-500 transform translate-y-full backdrop-blur-md">
     {{-- Audio Element --}}
     <audio id="main-audio-element" class="hidden" preload="auto"></audio>
@@ -248,17 +258,133 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Show loading spinner immediately
+        showLoading();
+
         // Attempt playback
         const playPromise = audio.play();
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                updatePlayPauseState(true);
+                // Playback started. Event listener will update UI.
             }).catch(error => {
                 console.error("Playback failed: ", error);
                 updatePlayPauseState(false);
+                setupAutoplayFallback();
             });
         }
     };
+
+    // Helper: Show Loading State Spinner
+    function showLoading() {
+        playPauseIcon.textContent = 'sync';
+        playPauseIcon.classList.add('animate-spin-custom');
+        
+        if (currentPlayingBtn) {
+            const icon = currentPlayingBtn.querySelector('.track-btn-icon');
+            if (icon) {
+                icon.textContent = 'sync';
+                icon.classList.add('animate-spin-custom');
+                icon.classList.remove('hidden');
+            }
+            const trackNum = currentPlayingBtn.querySelector('.group > span:not(.material-symbols-outlined)');
+            if (trackNum) {
+                trackNum.classList.add('hidden');
+            }
+            const actionBtnIcon = currentPlayingBtn.querySelector('button > span.material-symbols-outlined');
+            if (actionBtnIcon) {
+                actionBtnIcon.textContent = 'sync';
+                actionBtnIcon.classList.add('animate-spin-custom');
+            }
+        }
+    }
+
+    // Helper: Hide Loading State Spinner and show correct play/pause icon
+    function hideLoading(isPlaying) {
+        playPauseIcon.classList.remove('animate-spin-custom');
+        
+        if (currentPlayingBtn) {
+            const icon = currentPlayingBtn.querySelector('.track-btn-icon');
+            if (icon) {
+                icon.classList.remove('animate-spin-custom');
+            }
+            const actionBtnIcon = currentPlayingBtn.querySelector('button > span.material-symbols-outlined');
+            if (actionBtnIcon) {
+                actionBtnIcon.classList.remove('animate-spin-custom');
+            }
+        }
+
+        if (isPlaying) {
+            playPauseIcon.textContent = 'pause';
+            if (currentPlayingBtn) {
+                const icon = currentPlayingBtn.querySelector('.track-btn-icon');
+                if (icon) {
+                    icon.textContent = 'pause_circle';
+                    icon.classList.remove('hidden');
+                }
+                const trackNum = currentPlayingBtn.querySelector('.group > span:not(.material-symbols-outlined)');
+                if (trackNum) {
+                    trackNum.classList.add('hidden');
+                }
+                const actionBtnIcon = currentPlayingBtn.querySelector('button > span.material-symbols-outlined');
+                if (actionBtnIcon) {
+                    actionBtnIcon.textContent = 'pause';
+                }
+            }
+        } else {
+            playPauseIcon.textContent = 'play_arrow';
+            if (currentPlayingBtn) {
+                const icon = currentPlayingBtn.querySelector('.track-btn-icon');
+                if (icon) {
+                    icon.textContent = 'play_circle';
+                    icon.classList.add('hidden');
+                }
+                const trackNum = currentPlayingBtn.querySelector('.group > span:not(.material-symbols-outlined)');
+                if (trackNum) {
+                    trackNum.classList.remove('hidden');
+                }
+                const actionBtnIcon = currentPlayingBtn.querySelector('button > span.material-symbols-outlined');
+                if (actionBtnIcon) {
+                    actionBtnIcon.textContent = 'play_arrow';
+                }
+            }
+        }
+    }
+
+    // Fallback: Bind one-time click/touch listeners to trigger play on first interaction if blocked by autoplay policy
+    function setupAutoplayFallback() {
+        if (window.currentRemoveAutoplayFallback) return;
+
+        const startPlayOnInteraction = (e) => {
+            // If user clicked close button, play/pause button directly, or another track, let their handlers run and just clean up fallback
+            if (e && e.target) {
+                if (e.target.closest('#player-btn-close') || 
+                    e.target.closest('.play-track-trigger') || 
+                    e.target.closest('#player-btn-play-pause')) {
+                    removeInteractionListeners();
+                    return;
+                }
+            }
+
+            showLoading();
+            audio.play().then(() => {
+                removeInteractionListeners();
+            }).catch(err => {
+                console.error("Interaction playback failed: ", err);
+                updatePlayPauseState(false);
+            });
+        };
+
+        function removeInteractionListeners() {
+            document.removeEventListener('click', startPlayOnInteraction);
+            document.removeEventListener('touchstart', startPlayOnInteraction);
+            window.currentRemoveAutoplayFallback = null;
+        }
+
+        document.addEventListener('click', startPlayOnInteraction);
+        document.addEventListener('touchstart', startPlayOnInteraction);
+
+        window.currentRemoveAutoplayFallback = removeInteractionListeners;
+    }
 
     // Sync button state from outside router
     window.syncPlayingButton = function(buttonEl, isPlaying) {
@@ -269,33 +395,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toggle Play/Pause
     function togglePlayPause() {
+        if (typeof window.currentRemoveAutoplayFallback === 'function') {
+            window.currentRemoveAutoplayFallback();
+        }
+
         if (audio.paused) {
+            showLoading();
             audio.play().then(() => {
-                updatePlayPauseState(true);
-            }).catch(err => console.error(err));
+                // Playback started. Event listener will update UI.
+            }).catch(err => {
+                console.error(err);
+                updatePlayPauseState(false);
+            });
         } else {
             audio.pause();
-            updatePlayPauseState(false);
+            // Paused. Event listener will update UI.
         }
     }
 
     // Update play/pause icon state
     function updatePlayPauseState(isPlaying) {
+        if (typeof window.currentRemoveAutoplayFallback === 'function') {
+            window.currentRemoveAutoplayFallback();
+        }
+
+        hideLoading(isPlaying);
+
         if (isPlaying) {
-            playPauseIcon.textContent = 'pause';
             localStorage.setItem('hmak_player_playing', 'true');
             if (currentPlayingBtn) {
-                const icon = currentPlayingBtn.querySelector('.track-btn-icon');
-                if (icon) icon.textContent = 'pause_circle';
                 currentPlayingBtn.classList.add('bg-primary/20', 'border-primary');
             }
         } else {
-            playPauseIcon.textContent = 'play_arrow';
             localStorage.setItem('hmak_player_playing', 'false');
-            if (currentPlayingBtn) {
-                const icon = currentPlayingBtn.querySelector('.track-btn-icon');
-                if (icon) icon.textContent = 'play_circle';
-            }
         }
     }
 
@@ -370,6 +502,27 @@ document.addEventListener('DOMContentLoaded', () => {
         timeCurrent.textContent = '00:00';
         localStorage.setItem('hmak_player_time', '0');
         localStorage.setItem('hmak_player_playing', 'false');
+    });
+
+    // Buffering & Loading states
+    audio.addEventListener('waiting', () => {
+        showLoading();
+    });
+
+    audio.addEventListener('seeking', () => {
+        showLoading();
+    });
+
+    audio.addEventListener('playing', () => {
+        updatePlayPauseState(true);
+    });
+
+    audio.addEventListener('pause', () => {
+        updatePlayPauseState(false);
+    });
+
+    audio.addEventListener('error', () => {
+        updatePlayPauseState(false);
     });
 
     // Play/Pause button click
@@ -601,13 +754,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Play if previously active
         if (storedPlaying === 'true') {
+            showLoading();
             const playPromise = audio.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    updatePlayPauseState(true);
+                    // event listener handles it
                 }).catch(error => {
                     console.log("Autoplay was prevented by browser policy. Click Play to resume.");
                     updatePlayPauseState(false);
+                    setupAutoplayFallback();
                 });
             }
         } else {
