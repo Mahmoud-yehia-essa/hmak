@@ -378,8 +378,24 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e) {
             return;
         }
-        const path = urlObj.pathname;
+        const rawPath = urlObj.pathname;
         const searchParams = urlObj.searchParams;
+
+        // Helper to normalize pathnames (removes trailing slashes and production prefixes like /public)
+        function getCleanPath(p) {
+            if (p.endsWith('/') && p.length > 1) {
+                p = p.slice(0, -1);
+            }
+            if (p.startsWith('/public')) {
+                p = p.substring(7);
+            }
+            if (!p.startsWith('/')) {
+                p = '/' + p;
+            }
+            return p;
+        }
+
+        const path = getCleanPath(rawPath);
 
         // Desktop nav links
         document.querySelectorAll('header nav a').forEach(link => {
@@ -389,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) {
                 return;
             }
-            const linkPath = linkUrlObj.pathname;
+            const linkPath = getCleanPath(linkUrlObj.pathname);
             const linkParams = linkUrlObj.searchParams;
 
             let isActive = false;
@@ -433,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) {
                 return;
             }
-            const linkPath = linkUrlObj.pathname;
+            const linkPath = getCleanPath(linkUrlObj.pathname);
 
             let isActive = false;
 
@@ -466,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) {
                 return;
             }
-            const linkPath = linkUrlObj.pathname;
+            const linkPath = getCleanPath(linkUrlObj.pathname);
             const linkParams = linkUrlObj.searchParams;
 
             let isActive = false;
