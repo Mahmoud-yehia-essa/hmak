@@ -54,7 +54,7 @@
                         </div>
                         <div class="content">
                             <p style="font-family: 'Cairo'">عنوان البريد الإلكتروني</p>
-                            <a href="mailto:Infoseoc@gmail.com">info@gmail.com</a>
+                            <a href="mailto:info@hmak.org">info@hmak.org</a>
                         </div>
                     </div>
                    </div>
@@ -66,12 +66,13 @@
                             <img src="{{ asset('frontend/assets/img/icons/location3.svg') }}" alt="">
                         </div>
                         <div class="content">
-                            <a href="#" style="font-family: 'Cairo'">عنوان شركة المقام</a>
+                            <p style="font-family: 'Cairo'; margin: 0; font-size: 14px;">العنوان الرئيسي:</p>
+                            <span style="font-family: 'Cairo'; font-weight: bold;">Gravity Tower, شارع أحمد الجابر، مدينة الكويت</span>
                         </div>
                     </div>
 
                     <div class="phone-number">
-                        <a style="font-family: 'Cairo'" href="https://www.google.com/maps/place/29%C2%B020'27.2%22N+47%C2%B040'17.6%22E/@29.3405717,47.6726461,16.98z/data=!4m4!3m3!8m2!3d29.3408889!4d47.6715556?entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" class="map" target="_blank">
+                        <a style="font-family: 'Cairo'" href="https://www.google.com/maps/search/?api=1&query=Gravity+Tower+Ahmad+Al+Jaber+Street+Kuwait" class="map" target="_blank">
                             العنوان عبر الخريطة
                         </a>
                     </div>
@@ -169,13 +170,13 @@
             <img src="{{ asset('frontend/assets/img/icons/location3.svg') }}" alt="">
           </div>
           <div class="space32"></div>
-            <a href="#"> فرع الجهراء <br class="d-lg-block d-none">
-            العنوان</a>
+            <a href="#"> المكتب الرئيسي <br class="d-lg-block d-none">
+            Gravity Tower, شارع أحمد الجابر، مدينة الكويت</a>
             <div class="space24"></div>
             <p>رقم الهاتف</p>
             <a href="tel:123-456-7890">00965</a>
             <div class="space32"></div>
-            <a href="https://www.google.com/maps/place/29%C2%B020'27.2%22N+47%C2%B040'17.6%22E/@29.3405717,47.6726461,16.98z/data=!4m4!3m3!8m2!3d29.3408889!4d47.6715556?entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" class="map" target="_blank">العنوان عبر الخريطة</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=Gravity+Tower+Ahmad+Al+Jaber+Street+Kuwait" class="map" target="_blank">العنوان عبر الخريطة</a>
           </div>
       </div>
 
@@ -215,7 +216,7 @@
 </div>
 <div class="mapouter">
   <div class="gmap_canvas">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3463.406001!2d47.6715556!3d29.3408889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDIwJzI3LjIiTiA0N8KwNDAnMTcuNiJF!5e0!3m2!1sen!2s!4v1694520000001!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe src="https://maps.google.com/maps?q=Gravity%20Tower,%20Ahmad%20Al%20Jaber%20Street,%20Kuwait%20City&z=17&hl=ar&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 </div>
 <!--===== CONTACT AREA ENDS =======-->

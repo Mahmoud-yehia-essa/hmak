@@ -178,7 +178,7 @@
                     </span>
                     <div class="flex-grow min-w-0">
                         <span class="text-xs text-slate-400 dark:text-slate-500 font-bold block mb-1">البريد الإلكتروني</span>
-                        <a href="mailto:info@gmail.com" class="text-base font-extrabold text-slate-800 dark:text-white hover:text-primary transition-colors block truncate">info@gmail.com</a>
+                        <a href="mailto:info@hmak.org" class="text-base font-extrabold text-slate-800 dark:text-white hover:text-primary transition-colors block truncate">info@hmak.org</a>
                     </div>
                 </div>
 
@@ -188,12 +188,12 @@
                         <span class="material-symbols-outlined text-2xl">location_on</span>
                     </span>
                     <div class="flex-grow min-w-0">
-                        <span class="text-xs text-slate-400 dark:text-slate-500 font-bold block mb-1">فرع الجهراء</span>
+                        <span class="text-xs text-slate-400 dark:text-slate-500 font-bold block mb-1">المكتب الرئيسي</span>
                         <p class="text-sm font-extrabold text-slate-800 dark:text-white leading-relaxed">
-                            العنوان: الجهراء، الكويت
+                            العنوان: Gravity Tower, شارع أحمد الجابر، مدينة الكويت
                         </p>
                         <div class="mt-2">
-                            <a href="https://www.google.com/maps/place/29%C2%B020'27.2%22N+47%C2%B040'17.6%22E/@29.3405717,47.6726461,16.98z" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors" style="text-decoration: none;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=Gravity+Tower+Ahmad+Al+Jaber+Street+Kuwait" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors" style="text-decoration: none;">
                                 <span class="material-symbols-outlined text-sm">map</span>
                                 <span>عرض الخريطة</span>
                             </a>
@@ -205,7 +205,7 @@
             {{-- Google Map --}}
             <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/80 p-2 shadow-sm overflow-hidden group">
                 <div class="rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 transition-transform duration-500 group-hover:scale-[1.01] h-[300px]">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3463.406001!2d47.6715556!3d29.3408889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDIwJzI3LjIiTiA0N8KwNDAnMTcuNiJF!5e0!3m2!1sen!2s!4v1694520000001!5m2!1sen!2s" 
+                    <iframe src="https://maps.google.com/maps?q=Gravity%20Tower,%20Ahmad%20Al%20Jaber%20Street,%20Kuwait%20City&z=17&hl=ar&output=embed" 
                         width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="dark:invert dark:grayscale dark:opacity-85"></iframe>
                 </div>
             </div>

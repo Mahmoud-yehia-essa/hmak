@@ -55,7 +55,7 @@
         </span>
         <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">أنت عين الخبر</h1>
         <p class="text-sm md:text-lg text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed mb-6">
-            تغطيات وتقارير مرئية ومسموعة من المواطنين والصحفيين الميدانيين حول أبرز الأحداث في المجتمع الكويتي.
+            تغطيات وتقارير مرئية ومسموعة من المواطنين والصحفيين الميدانيين حول أبرز الأحداث في العالم.
         </p>
         <div class="mt-6 flex justify-center">
             <a href="{{ route('show.user.dashboard') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-sky-500 hover:bg-sky-650 text-white font-bold rounded-xl transition-all shadow-lg hover:scale-105" style="text-decoration:none;">
