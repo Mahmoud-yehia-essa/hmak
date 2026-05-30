@@ -435,8 +435,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetAllTrackButtons() {
         document.querySelectorAll('.play-track-trigger').forEach(btn => {
             btn.classList.remove('bg-primary/20', 'border-primary');
+            
             const icon = btn.querySelector('.track-btn-icon');
-            if (icon) icon.textContent = 'play_circle';
+            if (icon) {
+                icon.textContent = 'play_circle';
+                icon.classList.add('hidden');
+                icon.classList.remove('animate-spin-custom');
+            }
+            
+            const trackNum = btn.querySelector('.group > span:not(.material-symbols-outlined)');
+            if (trackNum) {
+                trackNum.classList.remove('hidden');
+            }
+            
+            const actionBtnIcon = btn.querySelector('button > span.material-symbols-outlined');
+            if (actionBtnIcon) {
+                actionBtnIcon.textContent = 'play_arrow';
+                actionBtnIcon.classList.remove('animate-spin-custom');
+            }
         });
     }
 
