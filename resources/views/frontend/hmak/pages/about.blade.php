@@ -61,11 +61,11 @@
                         <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">تغطية مستمرة</span>
                     </div>
                     <div class="text-center p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                        <span class="text-2xl md:text-3xl font-extrabold text-primary block">+١٠٠٠</span>
+                        <span class="text-2xl md:text-3xl font-extrabold text-primary block">0</span>
                         <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">خبر منشور</span>
                     </div>
                     <div class="text-center p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                        <span class="text-2xl md:text-3xl font-extrabold text-primary block">+٥٠</span>
+                        <span class="text-2xl md:text-3xl font-extrabold text-primary block">0</span>
                         <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">مراسل ميداني</span>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                         <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
                         
                         <div class="relative z-10 text-center">
-                            <img alt="Hamak News Logo" class="h-24 md:h-32 mx-auto mb-6 brightness-0 invert opacity-90" src="{{ asset('backend/assets/images/logo-hmak.png') }}"/>
+                            <img alt="Hamak News Logo" class="h-24 md:h-32 mx-auto mb-6 opacity-90" src="{{ asset('backend/assets/images/logo-hmak.png') }}"/>
                             <h3 class="text-xl md:text-2xl font-bold mb-3">صحيفة حماك</h3>
                             <p class="text-sky-100 text-sm leading-relaxed max-w-sm mx-auto">الحقيقة أولاً... نقل الخبر بكل أمانة وشفافية ومهنية عالية</p>
                             
