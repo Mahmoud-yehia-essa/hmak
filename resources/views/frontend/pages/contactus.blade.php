@@ -118,6 +118,23 @@
 
                             </div>
                         </div>
+                        {{-- Honeypot field --}}
+                        <div style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
+                            <label for="website_url">يرجى ترك هذا الحقل فارغاً</label>
+                            <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off" value="" />
+                        </div>
+
+                        {{-- Math Captcha --}}
+                        <div class="col-lg-12">
+                            <div class="input-area">
+                                <label for="captcha_answer" style="font-family: 'Cairo'; font-size: 14px; font-weight: bold; margin-bottom: 8px; display: block;">
+                                    التحقق البشري: كم حاصل جمع {{ $num1 }} + {{ $num2 }}؟ <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" id="captcha_answer" name="captcha_answer" required placeholder="أدخل ناتج الجمع" style="width: 100%;">
+                                @error('captcha_answer') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
                         <div class="col-lg-12">
                             <div class="input-area">
                                 {{-- 12 --}}

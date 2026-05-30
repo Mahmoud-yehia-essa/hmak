@@ -115,6 +115,28 @@
                         @enderror
                     </div>
 
+                    {{-- Honeypot field --}}
+                    <div style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
+                        <label for="website_url">يرجى ترك هذا الحقل فارغاً</label>
+                        <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off" value="" />
+                    </div>
+
+                    {{-- Math Captcha --}}
+                    <div class="flex flex-col">
+                        <label for="captcha_answer" class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-base text-primary">rule</span>
+                            التحقق البشري: كم حاصل جمع {{ $num1 }} + {{ $num2 }}؟ <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="captcha_answer" name="captcha_answer" required placeholder="أدخل ناتج الجمع" 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:border-primary focus:ring-primary/20 focus:ring-2 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-550 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                        @error('captcha_answer') 
+                            <span class="text-xs text-red-500 mt-1.5 font-bold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">error</span>
+                                {{ $message }}
+                            </span> 
+                        @enderror
+                    </div>
+
                     {{-- Submit Button --}}
                     <div class="pt-2">
                         <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-l from-primary to-sky-600 hover:from-sky-600 hover:to-primary text-white font-bold rounded-xl transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] text-sm">

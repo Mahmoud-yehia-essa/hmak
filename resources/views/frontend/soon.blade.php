@@ -234,6 +234,19 @@
                       class="w-full bg-slate-950/80 border border-slate-850 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300">أود التسجيل وتلقي إشعارات التحديث فور إطلاق النسخة الجديدة والمطورة لصحيفة حماك الإلكترونية.</textarea>
           </div>
 
+          {{-- Honeypot field --}}
+          <div style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
+            <label for="website_url">يرجى ترك هذا الحقل فارغاً</label>
+            <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off" value="" />
+          </div>
+
+          {{-- Math Captcha --}}
+          <div>
+            <label for="captcha_answer" class="block text-xs font-bold text-slate-350 mb-1.5">التحقق البشري: كم حاصل جمع {{ $num1 }} + {{ $num2 }}؟ <span class="text-red-500">*</span></label>
+            <input type="number" name="captcha_answer" id="captcha_answer" required placeholder="أدخل ناتج الجمع" 
+                   class="w-full bg-slate-950/80 border border-slate-850 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300 text-left" dir="ltr">
+          </div>
+
           <button type="submit" id="submit-btn" class="w-full py-3 px-6 rounded-xl bg-gradient-to-l from-primary to-sky-600 hover:from-sky-600 hover:to-primary text-white font-bold text-sm transition-all duration-300 shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2">
             <span class="material-symbols-outlined text-lg">send</span>
             <span>سجلني الآن لتلقي الإشعارات</span>
@@ -322,19 +335,25 @@
           body: formData
         })
         .then(response => {
-          // Since the controller redirects, we follow the redirect.
-          // However, we know that if redirect or successful response is returned, the record has been saved.
-          // Let's display success directly to maintain clean UI flow without leaving the soon page.
-          showFeedback(true, "تم تسجيل بياناتك بنجاح! سنقوم بإشعارك فور إطلاق النسخة الجديدة.");
+          if (!response.ok) {
+            return response.json().then(err => { throw err; });
+          }
+          return response.json();
+        })
+        .then(data => {
+          showFeedback(true, data.message || "تم تسجيل بياناتك بنجاح! سنقوم بإشعارك فور إطلاق النسخة الجديدة.");
           notifyForm.reset();
         })
         .catch(error => {
           console.error("Submission error:", error);
-          // Standard fallback showing success because controller redirecting is followed as 200/302,
-          // meaning it succeeded in saving the contact. If the fetch was blocked, it might fail.
-          // We can show success because usually it goes through successfully.
-          showFeedback(true, "تم تسجيل بياناتك بنجاح! سنقوم بإشعارك فور إطلاق النسخة الجديدة.");
-          notifyForm.reset();
+          let errMsg = "حدث خطأ أثناء إرسال طلبك. يرجى المحاولة مرة أخرى.";
+          if (error && error.errors) {
+            const firstKey = Object.keys(error.errors)[0];
+            errMsg = error.errors[firstKey][0];
+          } else if (error && error.message) {
+            errMsg = error.message;
+          }
+          showFeedback(false, errMsg);
         })
         .finally(() => {
           submitBtn.disabled = false;

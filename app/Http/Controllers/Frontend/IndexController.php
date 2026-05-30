@@ -79,8 +79,12 @@ class IndexController extends Controller
 
     public function showSoon()
     {
+        // Generate math captcha for coming soon page
+        $num1 = rand(1, 9);
+        $num2 = rand(1, 9);
+        session(['captcha_num1' => $num1, 'captcha_num2' => $num2]);
 
-        return view('frontend.soon');
+        return view('frontend.soon', compact('num1', 'num2'));
     }
 
     public function showUserDashboard()
