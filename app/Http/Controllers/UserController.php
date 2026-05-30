@@ -246,9 +246,9 @@ class UserController extends Controller
 
             'email' => $request->email,
 
-                        'country_code' => $dialCode,
-                        'country_flag' => $flag,
-                        'country_name' => $cName,
+            // 'country_code' => $dialCode,
+            // 'country_flag' => $flag,
+            // 'country_name' => $cName,
 
 
 
@@ -483,9 +483,9 @@ $countryData = json_decode($request->input('country_data'), true);
         $user->lname = $request->lname;
         $user->phone = $request->phone;
         $user->address = $request->address;
-        $user->country_code = $dialCode;
-                $user->country_flag = $flag;
-                $user->country_name = $cName;
+        // $user->country_code = $dialCode;
+        // $user->country_flag = $flag;
+        // $user->country_name = $cName;
 
 
                 $user->role = $request->role;
@@ -657,7 +657,7 @@ $countryData = json_decode($request->input('country_data'), true);
 
         // Check if email already exists
 
-        if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
+        if (User::where('phone', $request->phone)->exists()) {
             return response()->json([
                 'success' => false,
                 'message' => 'phone already exists'
@@ -681,7 +681,7 @@ $countryData = json_decode($request->input('country_data'), true);
 
         // Check if email already exists
 
-        if (User::where('phone', $request->phone)->where('country_code', $request->country_code)->exists()) {
+        if (User::where('phone', $request->phone)->exists()) {
             return response()->json([
                 'success' => false,
                 'message' => 'phone already exists'
@@ -694,12 +694,10 @@ $countryData = json_decode($request->input('country_data'), true);
             'lname' => $request->lname,
             'email' => $request->email,
             'phone' => $request->phone,
-            'country_code' => $request->country_code,
+            // 'country_code' => $request->country_code,
             'password' => Hash::make($request->password),
             'photo' => $request->photo,
             'is_game_free' => 'paid',
-
-
         ]);
 
         if ($userCreated) {
@@ -724,12 +722,11 @@ $countryData = json_decode($request->input('country_data'), true);
 {
     $incomingFields = $request->validate([
         'phone' => 'required|string',
-        'country_code' => 'required|string',
+        'country_code' => 'nullable|string',
     ]);
 
     // Find user instead of using auth()->attempt()
     $user = \App\Models\User::where('phone', $incomingFields['phone'])
-                ->where('country_code', $incomingFields['country_code'])
                 ->first();
 
     if ($user) {
